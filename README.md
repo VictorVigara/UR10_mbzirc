@@ -21,6 +21,13 @@ The goal of the mission is to detect target boxes and plan trajectories to grab 
 4. Grab the object. (Not implemented yet)
 5. Generate final trajectory avoiding obstacles. 
 
+## Requirements
+This workspace works in Ubuntu 20.04 with ROS Noetic and the UR10 CB2 version. 
+To be able to use the moveit package, this need to be installed:  
+```
+$ sudo apt install ros-noetic-moveit 
+```
+ 
 ## Installation
 Clone the repository into your catkin working directory and initialize submodules: 
 ```
