@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- Launch tf from camera to robot base_link -->
+    <include file="$(find perception)/launch/tf_camera.launch"/>
+
+    <!-- Launch driver to connect the robot-->
+    <node name="target_updater" pkg="perception" type="target_updater" output="screen" >
+            <!--Load parameters from config files-->
+            <rosparam command="load" file="$(find control)/config/params.yaml" />
+    </node>
+</launch>

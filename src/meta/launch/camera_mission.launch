@@ -1,0 +1,15 @@
+<launch>
+
+    <!-- Launch UR driver -->
+    <include file="$(find ur_modern_driver)/launch/ur10_bringup.launch"/>
+
+    <!-- Launch MoveIt UR10 config -->
+    <include file="$(find custom_ur10_moveit_config)/launch/demo_ur10.launch"/>
+
+    <!-- Launch dummy perception -->
+    <include file="$(find perception)/launch/camera_perception.launch"/>
+
+    <!-- Launch UR10 control -->
+    <include file="$(find control)/launch/control.launch"/>
+
+</launch>

@@ -1,0 +1,7 @@
+<launch>
+    <!-- Launch driver to connect the robot-->
+    <node name="control_node" pkg="control" type="control_node" output="screen" >
+            <!--Load parameters from config files-->
+            <rosparam command="load" file="$(find control)/config/params.yaml" />
+    </node>
+</launch>

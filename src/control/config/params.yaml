@@ -1,0 +1,10 @@
+
+#######################
+### UR10 PARAMETERS ###
+#######################
+
+manual: FALSE           # If true, the robot won't move until enter key is pressed for every trajectory calculated
+static_scan_time: 2     # Time the robot is stopped in the scan position to let the camera scan the environment
+vel_scaling_factor: 0.1 # Factor to reduce the velocity
+acc_scaling_factor: 0.1 # Factor to reduce the acceleration
+real_camera: FALSE      # if False, dummy camera node simulates the camera function pulbishing a target_position

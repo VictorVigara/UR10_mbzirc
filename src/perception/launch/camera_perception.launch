@@ -1,0 +1,9 @@
+<launch>
+
+    <!-- Launch tf from camera to robot base_link -->
+    <include file="$(find perception)/launch/tf_camera.launch"/>
+
+    <!-- Launch driver to connect the robot-->
+    <node name="my_node" pkg="perception" type="find_target.py" output="screen" />
+</launch>
+ 

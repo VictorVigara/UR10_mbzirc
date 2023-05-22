@@ -1,0 +1,9 @@
+[submodule "src/ur_modern_driver"]
+	path = src/ur_modern_driver
+	url = https://github.com/VictorVigara/ur_modern_driver
+[submodule "src/ur_msgs"]
+	path = src/ur_msgs
+	url = https://github.com/VictorVigara/ur_msgs
+[submodule "src/realsense-ros"]
+	path = src/realsense-ros
+	url = https://github.com/VictorVigara/realsense-ros
