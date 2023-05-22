@@ -7,3 +7,6 @@
 [submodule "src/realsense-ros"]
 	path = src/realsense-ros
 	url = https://github.com/VictorVigara/realsense-ros
+[submodule "src/moveit_calibration"]
+	path = src/moveit_calibration
+	url = https://github.com/ros-planning/moveit_calibration
