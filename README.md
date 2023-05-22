@@ -42,6 +42,14 @@ $ catkin_make
 
 ## Usage
 
+### UR10 ethernet configuration
+The connection to the UR10 is done through ethernet. Once the ethernet is connected to the computer, the configuration is as following:
+* IPv4 method: Manual
+* Address: 192.38.66.1
+* Netmask: 255.255.255.0
+* Gateway: 
+
+
 ### Camera calibration
 Camera calibration should be done when placing the camera into the robotic arm. For that purpose, the moveit_calibration package will be used. First of all, the camera calibration launch file have to be launched: 
 ```
