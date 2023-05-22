@@ -50,6 +50,13 @@ $ roslaunch meta camera_calibration.launch
 Rviz should show the real state of the UR10. If that is the case, the calibration is done following the steps in this [moveit calibration tutorial](https://ros-planning.github.io/moveit_tutorials/doc/hand_eye_calibration/hand_eye_calibration_tutorial.html). 
 Once the tutorial has been completed, the launch file generated that contains the transform between the camera and the UR base link need to be placed in src/perception/launch with the name tf_camera.launch. 
 
+### Mission parameters
+A config file has been created in control package (src/control/config/params.yaml) with the following parameters: 
+* manual: [TRUE/FALSE] If TRUE, the robot won't move until enter key is pressed for every trajectory calculated. 
+* static_scan_time: [>0] Time the robot is stopped in the scan position to let the camera scan the environment. 
+* vel_scaling_factor: [0-1] Factor to reduce the max velocity.
+* acc_scaling_factor: [0-1] Factor to reduce the max acceleration.
+* real_camera: [TRUE/FALSE] If False, dummy camera node simulates the camera function pulbishing a target_position. 
 
 
 ### Launch mission
