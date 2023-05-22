@@ -75,6 +75,8 @@ A meta package has been created to launch the required nodes to start the missio
 $ roslaunch meta camera_mission.launch
 ```
 
+Inside the launch file ther is an argument which is real_camera, that can be set to false when no camera is connected. In this mode, a dummy camera node will be launched simulating the target position published by the camera. 
+
 This general launch file launches: 
 1) UR10 driver (ur_modern_driver)
 2) MoveIt UR10 configuration (custom_ur10_moveit_config)
