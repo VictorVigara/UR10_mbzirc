@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     tf2_ros::TransformListener tfListener(tf_buffer);
 
     // Define param to know if real camera or dummy camera is used
-    bool real_camera; 
+    bool real_camera = false; 
 
     if (!n.param<bool>("manual", real_camera, false)) {
         ROS_WARN_STREAM("Did not found manual name. Setted to a standard value: " << real_camera);
