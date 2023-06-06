@@ -42,6 +42,14 @@ $ catkin_make
 
 ## Usage
 
+### UR10 ethernet configuration
+The connection to the UR10 is done through ethernet. Once the ethernet is connected to the computer, the configuration is as following:
+* IPv4 method: Manual
+* Address: 192.38.66.1
+* Netmask: 255.255.255.0
+* Gateway: 
+
+
 ### Camera calibration
 Camera calibration should be done when placing the camera into the robotic arm. For that purpose, the moveit_calibration package will be used. First of all, the camera calibration launch file have to be launched: 
 ```
@@ -66,6 +74,8 @@ A meta package has been created to launch the required nodes to start the missio
 ```
 $ roslaunch meta camera_mission.launch
 ```
+
+Inside the launch file ther is an argument which is real_camera, that can be set to false when no camera is connected. In this mode, a dummy camera node will be launched simulating the target position published by the camera. 
 
 This general launch file launches: 
 1) UR10 driver (ur_modern_driver)
