@@ -21,6 +21,9 @@ The goal of the mission is to detect target boxes and plan trajectories to grab 
 4. Grab the object. (Not implemented yet)
 5. Generate final trajectory avoiding obstacles. 
 
+The control of the manipulator has been done using the MoveIt package, which acts as an interface calculating trajectories given the desired point. Tutorials about this package can be found [here](https://ros-planning.github.io/moveit_tutorials/). In particular, the it has been used the [Move group C++ Interface](https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html). 
+
+
 ## Requirements
 This workspace works in Ubuntu 20.04 with ROS Noetic and the UR10 CB2 version. 
 To be able to use the moveit package, this need to be installed:  
@@ -43,11 +46,13 @@ $ catkin_make
 ## Usage
 
 ### UR10 ethernet configuration
-The connection to the UR10 is done through ethernet. Once the ethernet is connected to the computer, the configuration is as following:
+The connection to the UR10 is done through ethernet. Once the ethernet is connected to the computer, the ethernet configuration is as following:
 * IPv4 method: Manual
 * Address: 192.38.66.1
 * Netmask: 255.255.255.0
 * Gateway: 
+
+Then, your computer IP need to be set in the ur_modern_driver package. In the launch file "ur_modern_driver/launch/ur10_bringup.launch" set the reverse_ip parameter to your computer IP, to let the robot read the trajectory sent by your computer. 
 
 
 ### Camera calibration
