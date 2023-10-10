@@ -24,6 +24,24 @@ The goal of the mission is to detect target boxes and plan trajectories to grab 
 The control of the manipulator has been done using the MoveIt package, which acts as an interface calculating trajectories given the desired point. Tutorials about this package can be found [here](https://ros-planning.github.io/moveit_tutorials/). In particular, the it has been used the [Move group C++ Interface](https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html). 
 
 
+## Docker (Not working yet)
+1. Pull image from dockerhub
+2. In your terminal, Go to the folder where the dockerfile is located (in this repos root folder)
+3. for now: Docker run --name mbzirc_manipulator_test_env --privileged --network host -e DISPLAY=host.docker.internal:0.0 -v .:/UR10_mbzirc_ws -it lucasmogsan/ur10_mbzirc:latest
+to be done later: docker compose file or bash script
+
+
+4. go to folder UR10_mbzirc_ws
+5. catkin_make    (takes a while, 5-10 min, the first time)
+6. source devel/setup.bash
+7. If running from windows start XLaunch (if not downloaded use: https://sourceforge.net/projects/xming/) and set display number to 0
+
+ROS setup stuff:
+Change your ip adress to match the robot ip adress, but only change the last number to 220 (192.38.66.220)
+Change ur10_bringup.launch in ur_modern_driver to your own ip adress (ifconfig)
+try ping the robot (eg. ping 192.38.66.227)
+
+
 ## Requirements
 This workspace works in Ubuntu 20.04 with ROS Noetic and the UR10 CB2 version. 
 To be able to use the moveit package, this need to be installed:  
