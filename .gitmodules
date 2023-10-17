@@ -11,5 +11,5 @@
 	path = src/moveit_calibration
 	url = https://github.com/ros-planning/moveit_calibration
 [submodule "vl53l0x_driver"]
-	path = vl53l0x_driver
+	path = src/vl53l0x_driver
 	url = https://github.com/Lucasmogsan/vl53l0x_driver.git

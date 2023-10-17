@@ -24,22 +24,83 @@ The goal of the mission is to detect target boxes and plan trajectories to grab 
 The control of the manipulator has been done using the MoveIt package, which acts as an interface calculating trajectories given the desired point. Tutorials about this package can be found [here](https://ros-planning.github.io/moveit_tutorials/). In particular, the it has been used the [Move group C++ Interface](https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html). 
 
 
-## Docker (Not working yet)
-1. Pull image from dockerhub
-2. In your terminal, Go to the folder where the dockerfile is located (in this repos root folder)
-3. for now: Docker run --name mbzirc_manipulator_test_env --privileged --network host -e DISPLAY=host.docker.internal:0.0 -v .:/UR10_mbzirc_ws -it lucasmogsan/ur10_mbzirc:latest
-to be done later: docker compose file or bash script
 
 
-4. go to folder UR10_mbzirc_ws
-5. catkin_make    (takes a while, 5-10 min, the first time)
-6. source devel/setup.bash
-7. If running from windows start XLaunch (if not downloaded use: https://sourceforge.net/projects/xming/) and set display number to 0
+ ## Docker
+Make sure that Docker is installed following the official [Docker Installation Instructions](https://docs.docker.com/engine/install/). It is advisable to also follow the [Linux Post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/).
 
-ROS setup stuff:
-Change your ip adress to match the robot ip adress, but only change the last number to 220 (192.38.66.220)
+0. Before starting up - on your local computer - go to your "wired connetion" and edit settings for your connection:
+IPv4 -> method: manual -> adress: 192.38.66.1 - netmask 255.255.255.0
+
+1. Pull the docker image:
+```bash
+./docker-pull.sh
+```
+
+2. Run the docker container specifiying a shared folder path between the host and the container:
+```bash
+./docker-run.sh /path/to/shared/folder
+```
+
+if you are already in your /UR10_MBZIRC folder just type:
+```bash
+./docker-run.sh .
+```
+
+3. To open more terminals in the running container:
+
+```bash
+docker exec -it ur10_mbzirc_develop bash
+```
+
+4. To restart an stopped container after a PC reboot (then do exec):
+
+```bash
+docker start ur10_mbzirc_develop
+```
+
+## Building the image (if needed)
+Build image
+1. cd to the folder where the dockerfile is located (in this repos root folder)
+```bash
+docker build . -t lucasmogsan/ur10_mbzirc_develop:latest
+```
+2. The following is optional if you want to push to dockerhub:
+```bash
+docker tag lucasmogsan/ur10_mbzirc_develop:latest docker.io/lucasmogsan/ur10_mbzirc_develop:latest
+```
+
+```bash
+docker push docker.io/lucasmogsan/ur10_mbzirc_develop:latest
+```
+
+
+
+## Runningt the code
+
+
+```
+$ (maybe needed) source /opt/ros/noetic/setup.bash
+$ cd ~/UR10_mbzirc_ws
+$ catkin_make
+$ source devel/setup.bash
+```
+catkin_make might take a while, 5-10 min, the first time
+
+
+
+Change your ip adress to match the robot ip adress, but only change the last number to 220 (192.38.66.1)
 Change ur10_bringup.launch in ur_modern_driver to your own ip adress (ifconfig)
 try ping the robot (eg. ping 192.38.66.227)
+
+
+
+Run test to see controller is working. Manually move the robot around in rviz:
+```
+$ roslaunch ur_modern_driver ur10_bringup.launch
+$ roslaunch custom_ur10_moveit_config demo_ur10.launch
+```
+
 
 
 ## Requirements
