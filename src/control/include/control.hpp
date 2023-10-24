@@ -18,6 +18,7 @@
 // ROS
 #include <geometry_msgs/PointStamped.h>
 #include "geometry_msgs/Point.h"
+#include <sensor_msgs/Range.h>
 
 #include <chrono>
 
@@ -37,6 +38,7 @@ public:
     void goFinalPosition(); 
     void runAll();
     void attachBox();
+    void testSequence();
 
     std::string target_pose_topic;
     std::string scan_finished_topic; 
@@ -48,6 +50,7 @@ private:
     
     // Subscribers
     ros::Subscriber targetPoseSubscriber_;
+    ros::Subscriber distsensorsubscriber_;
     
 
     //Publishers
@@ -56,6 +59,7 @@ private:
 
     // Callbacks
     void targetPoseCallback(const geometry_msgs::Pose::ConstPtr &msg);
+    void distSensorCallback(const sensor_msgs::Range& range_msg);
     
 
     // transforms
@@ -99,6 +103,7 @@ private:
     double target_x; 
     double target_y; 
     double target_z;
+    double sensor_z;
 
 
     tf2::Quaternion orientation;

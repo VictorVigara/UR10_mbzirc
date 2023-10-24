@@ -1,6 +1,7 @@
 <launch>
 
     <arg name="real_camera" default="false" />
+    <arg name="dist_sensor_on" default="true" />
 
     <!-- Load the YAML file containing the parameter -->
     <rosparam command="load" file="$(find control)/config/params.yaml" />
@@ -19,6 +20,11 @@
     <group unless="$(arg real_camera)">
         <!-- Launch dummy perception -->
         <include file="$(find perception)/launch/dummy_perception.launch"/>
+    </group>
+
+    <group if="$(arg dist_sensor_on)">
+        <!-- Launch dummy perception -->
+        <include file="$(find vl53l0x_driver)/launch/simple_publisher.launch"/>
     </group>
     
 

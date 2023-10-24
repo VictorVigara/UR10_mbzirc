@@ -77,8 +77,7 @@ docker push docker.io/lucasmogsan/ur10_mbzirc_develop:latest
 
 
 ## Runningt the code
-
-
+First source and build the ros environment and packages.
 ```
 $ (maybe needed) source /opt/ros/noetic/setup.bash
 $ cd ~/UR10_mbzirc_ws
@@ -88,18 +87,30 @@ $ source devel/setup.bash
 catkin_make might take a while, 5-10 min, the first time
 
 
-
-Change your ip adress to match the robot ip adress, but only change the last number to 220 (192.38.66.1)
-Change ur10_bringup.launch in ur_modern_driver to your own ip adress (ifconfig)
-try ping the robot (eg. ping 192.38.66.227)
+Make sure to change ***ur10_bringup.launch*** in ***ur_modern_driver*** to your own ip adress (should be changed 192.38.66.1)
+- Test by ping the robot (eg. ping 192.38.66.227)
 
 
-
-Run test to see controller is working. Manually move the robot around in rviz:
+**Run test:** to see controller is working. Manually move the robot around in rviz:
 ```
 $ roslaunch ur_modern_driver ur10_bringup.launch
 $ roslaunch custom_ur10_moveit_config demo_ur10.launch
 ```
+
+Test for sensor:
+```
+$ roslaunch vl53l0x_driver test.launch
+```
+
+
+**Run main program:** to find and pick the box object:
+```
+$ roslaunch meta camera_mission.launch
+```
+
+## Modifying code:
+**Fixed obstacles / objects**
+
 
 
 

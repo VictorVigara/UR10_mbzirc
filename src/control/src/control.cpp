@@ -6,6 +6,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <std_msgs/Bool.h>
+#include <sensor_msgs/Range.h>
 
 #include <sstream>
 #include <memory>
@@ -52,6 +53,8 @@ control::control(ros::NodeHandle& nodehandle):nh_(nodehandle), move_group_interf
 
 void control::subscribeToTopics(){
     targetPoseSubscriber_ = nh_.subscribe("/target_pose", 1, &control::targetPoseCallback, this);
+    // TODO: implement distance sensor subscriber
+    distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
 }
 
 void control::createPublishers(){
@@ -111,11 +114,76 @@ void control::targetPoseCallback(const geometry_msgs::Pose::ConstPtr &msg){
     target_received = true;
 }
 
+
+void control::distSensorCallback(const sensor_msgs::Range& range_msg){
+    if (range_msg.range > 1.5 or range_msg.range == 0.0){
+        std::cout << "Object not in range" << std::endl;
+    }
+    else {
+        sensor_z = range_msg.range;
+        std::cout << "Distance to object [m]: " << sensor_z << std::endl;
+    }
+}
+/*
+
+
+void control::followObject(){
+    // TODO: implement follow object
+    std::cout << "Follow object" << std::endl;
+
+    z_distance_list = [];   // List to store the last measurements of the distance sensor
+    n_measurements = 0;     // Number of measurements to calculate the z-velocity of the object
+    // Initialize the list with readings from the distance sensor
+    for (int i = 0; i < n_measurements; i++){
+        z_distance_list.append(sensor_z);
+    }
+
+    // Initialize flag to check if the target is close enough to grab it
+    ready_to_grab = false;
+
+    while not ready_to_grab{
+        // Read target position from distance sensor:
+        z_distance = sensor_z;
+
+        // TODO: Calculate the z-velocity of the object (using the prev 5 measurements)
+        // Append the new measurement to the list and if the list has more than 5 elements, remove the first one
+        z_distance_list.append(z_distance);
+        if (z_distance_list.size() > n_measurements){
+            z_distance_list.pop(0);
+        }
+        z_velocity = (z_distance_list[n_measurements-1] - z_distance_list[0])/n_measurements;
+
+        
+
+        // Set robot target pose:
+        // Downwards orientation per default
+        orientation.setRPY(-(2* M_PI)/4, 0, 0);
+        target_pose.orientation = tf2::toMsg(orientation);
+        // Fill target_pose with the position received from the camera node transformed to robot coordinates
+        target_pose.position.x = target_x;
+        target_pose.position.y = target_y;
+        // Make a poistion control to follow the object:
+        target_pose.position.z = target_z - z_distance + 0.15;
+
+        // Update target pose
+        move_group_interface_arm.setPoseTarget(target_pose);
+
+        // Plan and move 
+        planAndMove();
+
+        // Check if the target is close enough to grab it
+        if (z_distance < 0.2 and z_distance > 0.0){
+            ready_to_grab = true;
+        }
+    }
+
+}
+
+*/
+
 void control::initialScan(){
     // Implement a dynamic scan to find the target box
     std::cout << "Moving to scan position ..." << std::endl;
-
-
 
     // Joint values to initial scan
     /* std::vector<double> home_joints = {-1.5708, -1.5708, -0.698132, -2.26893, 1.5708, 0};
@@ -164,6 +232,7 @@ void control::approachTarget(){
 
 }
 
+
 void control::grabObject(){
 
     // Insert code to grab the object with the gripper
@@ -208,7 +277,41 @@ void control::goFinalPosition(){
     move_group_interface_arm.detachObject(target_box_object.id);
 }
 
+
+void control::testSequence(){
+    std::cout << "Planning pos 1" << std::endl;
+
+    for (int i = 0; i < 5; i++){
+
+        std::cout << "Planning pos 1" << std::endl;
+        orientation.setRPY(-(2* M_PI)/4, 0, 0);
+        target_pose.orientation = tf2::toMsg(orientation);
+        target_pose.position.x = 0; 
+        target_pose.position.y = 0.5;
+        target_pose.position.z =  0.4;
+
+        move_group_interface_arm.setPoseTarget(target_pose);
+        planAndMove();
+        ros::Duration(5).sleep();
+
+        std::cout << "Planning pos 2" << std::endl;
+
+        orientation.setRPY(-(2* M_PI)/4, 0, 0);
+        target_pose.orientation = tf2::toMsg(orientation);
+        target_pose.position.x = 0; 
+        target_pose.position.y = 0.6;
+        target_pose.position.z =  0.2;
+
+        move_group_interface_arm.setPoseTarget(target_pose);
+        planAndMove();
+        ros::Duration(5).sleep();
+    }
+
+}
+
 void control::runAll(){
+
+    testSequence();
 
     // Initial scan to detect target object
     initialScan(); 
