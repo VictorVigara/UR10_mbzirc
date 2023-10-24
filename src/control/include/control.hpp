@@ -39,6 +39,7 @@ public:
     void runAll();
     void attachBox();
     void testSequence();
+    void followObject();
 
     std::string target_pose_topic;
     std::string scan_finished_topic; 
@@ -106,6 +107,7 @@ private:
 
     double sensor_z;
     double sensor_z_mean;
+    double sensor_z_velocity;
     std::list<double> z_distance_list;
 
 

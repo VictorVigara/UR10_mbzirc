@@ -126,12 +126,13 @@ double sum(std::list<double>& list) {
 
 void control::distSensorCallback(const sensor_msgs::Range& range_msg){
     if (range_msg.range > 1.5 or range_msg.range == 0.0){
-        //std::cout << "Object not in range" << std::endl;
+        sensor_z_mean = 1.3;
+        std::cout << "Object not in range - dist read set to: " << sensor_z_mean << std::endl;
         
     }
     else {
         sensor_z = range_msg.range;
-        std::cout << "Distance to object [m] --- : " << sensor_z << std::endl;
+        //std::cout << "Distance to object [m] --- : " << sensor_z << std::endl;
 
         if (z_distance_list.size() < 5){
             z_distance_list.push_back(sensor_z);
@@ -142,64 +143,62 @@ void control::distSensorCallback(const sensor_msgs::Range& range_msg){
         }
         sensor_z_mean = sum(z_distance_list)/z_distance_list.size();
         std::cout << "Distance to object [m]: " << sensor_z_mean << std::endl;
+
+        sensor_z_velocity = (z_distance_list.back() - z_distance_list.front())/z_distance_list.size();
     }
 }
-/*
+
 
 
 void control::followObject(){
-    // TODO: implement follow object
+    // TODO: Look into velocity-based approach... this is a bit laggy as it is in steps and not continous.
+    // https://ros-planning.github.io/moveit_tutorials/doc/time_parameterization/time_parameterization_tutorial.html#speed-control
+    // Seems like we can use: /joint_speed or /ur_driver/URScript topic to control the speed of the joints:
+    // https://github.com/ros-industrial/ur_modern_driver
+    // https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers
+
+
     std::cout << "Follow object" << std::endl;
 
-    z_distance_list = [];   // List to store the last measurements of the distance sensor
-    n_measurements = 0;     // Number of measurements to calculate the z-velocity of the object
-    // Initialize the list with readings from the distance sensor
-    for (int i = 0; i < n_measurements; i++){
-        z_distance_list.append(sensor_z);
-    }
-
     // Initialize flag to check if the target is close enough to grab it
-    ready_to_grab = false;
+    bool ready_to_grab = false;
 
-    while not ready_to_grab{
+    std::cout << "Planning pos 1" << std::endl;
+    orientation.setRPY(-(2* M_PI)/4, 0, 0);
+    target_pose.orientation = tf2::toMsg(orientation);
+    target_pose.position.x = -0.07; 
+    target_pose.position.y = 0.55;
+    target_pose.position.z =  0.4;
+
+    move_group_interface_arm.setPoseTarget(target_pose);
+    planAndMove();
+
+
+    while (ready_to_grab != true){
         // Read target position from distance sensor:
-        z_distance = sensor_z;
-
-        // TODO: Calculate the z-velocity of the object (using the prev 5 measurements)
-        // Append the new measurement to the list and if the list has more than 5 elements, remove the first one
-        z_distance_list.append(z_distance);
-        if (z_distance_list.size() > n_measurements){
-            z_distance_list.pop(0);
-        }
-        z_velocity = (z_distance_list[n_measurements-1] - z_distance_list[0])/n_measurements;
-
-        
+        double z_distance = sensor_z_mean;
+        double z_obj_rel_vel = sensor_z_velocity;
 
         // Set robot target pose:
         // Downwards orientation per default
         orientation.setRPY(-(2* M_PI)/4, 0, 0);
         target_pose.orientation = tf2::toMsg(orientation);
         // Fill target_pose with the position received from the camera node transformed to robot coordinates
-        target_pose.position.x = target_x;
-        target_pose.position.y = target_y;
+        target_pose.position.x = -0.07;
+        target_pose.position.y = 0.55;
         // Make a poistion control to follow the object:
-        target_pose.position.z = target_z - z_distance + 0.15;
-
+        target_pose.position.z = 0.3 + z_distance;
         // Update target pose
         move_group_interface_arm.setPoseTarget(target_pose);
-
         // Plan and move 
         planAndMove();
 
         // Check if the target is close enough to grab it
-        if (z_distance < 0.2 and z_distance > 0.0){
+        if (z_distance < 0.1){
             ready_to_grab = true;
         }
     }
-
 }
-
-*/
 
 void control::initialScan(){
     // Implement a dynamic scan to find the target box
@@ -306,8 +305,8 @@ void control::testSequence(){
         std::cout << "Planning pos 1" << std::endl;
         orientation.setRPY(-(2* M_PI)/4, 0, 0);
         target_pose.orientation = tf2::toMsg(orientation);
-        target_pose.position.x = 0; 
-        target_pose.position.y = 0.5;
+        target_pose.position.x = -0.07; 
+        target_pose.position.y = 0.55;
         target_pose.position.z =  0.4;
 
         move_group_interface_arm.setPoseTarget(target_pose);
@@ -318,9 +317,9 @@ void control::testSequence(){
 
         orientation.setRPY(-(2* M_PI)/4, 0, 0);
         target_pose.orientation = tf2::toMsg(orientation);
-        target_pose.position.x = 0; 
-        target_pose.position.y = 0.6;
-        target_pose.position.z =  0.2;
+        target_pose.position.x = -0.07; 
+        target_pose.position.y = 0.59;
+        target_pose.position.z =  0.170;
 
         move_group_interface_arm.setPoseTarget(target_pose);
         planAndMove();
@@ -330,6 +329,8 @@ void control::testSequence(){
 }
 
 void control::runAll(){
+
+    //followObject();
 
     testSequence();
 
