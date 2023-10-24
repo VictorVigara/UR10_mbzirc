@@ -103,7 +103,10 @@ private:
     double target_x; 
     double target_y; 
     double target_z;
+
     double sensor_z;
+    double sensor_z_mean;
+    std::list<double> z_distance_list;
 
 
     tf2::Quaternion orientation;

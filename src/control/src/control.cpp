@@ -11,6 +11,7 @@
 #include <sstream>
 #include <memory>
 #include <iostream>
+#include <list>
 
 // MoveitCpp
 #include <moveit/moveit_cpp/moveit_cpp.h>
@@ -49,11 +50,11 @@ control::control(ros::NodeHandle& nodehandle):nh_(nodehandle), move_group_interf
     grab_object = false;
     scan_finished = false;
     mission_finished = false;
+    z_distance_list = {};   // List to store the last measurements of the distance sensor
 }
 
 void control::subscribeToTopics(){
     targetPoseSubscriber_ = nh_.subscribe("/target_pose", 1, &control::targetPoseCallback, this);
-    // TODO: implement distance sensor subscriber
     distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
 }
 
@@ -115,13 +116,32 @@ void control::targetPoseCallback(const geometry_msgs::Pose::ConstPtr &msg){
 }
 
 
+double sum(std::list<double>& list) {
+    double sum = 0;
+    for(double num : list) {
+        sum += num;
+    }
+    return sum;
+}
+
 void control::distSensorCallback(const sensor_msgs::Range& range_msg){
     if (range_msg.range > 1.5 or range_msg.range == 0.0){
-        std::cout << "Object not in range" << std::endl;
+        //std::cout << "Object not in range" << std::endl;
+        
     }
     else {
         sensor_z = range_msg.range;
-        std::cout << "Distance to object [m]: " << sensor_z << std::endl;
+        std::cout << "Distance to object [m] --- : " << sensor_z << std::endl;
+
+        if (z_distance_list.size() < 5){
+            z_distance_list.push_back(sensor_z);
+        }
+        else{
+            z_distance_list.pop_front();
+            z_distance_list.push_back(sensor_z);
+        }
+        sensor_z_mean = sum(z_distance_list)/z_distance_list.size();
+        std::cout << "Distance to object [m]: " << sensor_z_mean << std::endl;
     }
 }
 /*
