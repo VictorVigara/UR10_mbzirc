@@ -14,8 +14,7 @@ RUN apt-get install -y ros-noetic-moveit \
                     ros-noetic-robot-state-publisher \
                     ros-noetic-controller-manager \
                     ros-noetic-industrial-msgs \
-                    ros-noetic-pcl-ros \
-                    python3-catkin-tools
+                    ros-noetic-pcl-ros
                     
 RUN apt-get update
 RUN apt-get install -y xorg-dev \
