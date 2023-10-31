@@ -13,9 +13,3 @@
 [submodule "src/vl53l0x_driver"]
 	path = src/vl53l0x_driver
 	url = https://github.com/Lucasmogsan/vl53l0x_driver.git
-[submodule "src/universal_robot"]
-	path = src/universal_robot
-	url = https://github.com/ros-industrial/universal_robot.git
-[submodule "universal_robot"]
-	path = universal_robot
-	url = https://github.com/ros-industrial/universal_robot.git

@@ -83,7 +83,7 @@ docker push docker.io/lucasmogsan/ur10_mbzirc_develop:latest
 First source and build the ros environment and packages.
 ```
 $ (maybe needed) source /opt/ros/noetic/setup.bash
-$ cd ~/UR10_mbzirc_ws
+$ cd /UR10_mbzirc_ws
 $ catkin_make
 $ source devel/setup.bash
 ```
