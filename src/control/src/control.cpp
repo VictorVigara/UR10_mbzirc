@@ -55,11 +55,15 @@ control::control(ros::NodeHandle& nodehandle):nh_(nodehandle), move_group_interf
 
 void control::subscribeToTopics(){
     targetPoseSubscriber_ = nh_.subscribe("/target_pose", 1, &control::targetPoseCallback, this);
-    distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
+    if (dist_sensor == true){
+        distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
+    }
+    
 }
 
 void control::createPublishers(){
     scanFinishedPublisher = nh_.advertise<std_msgs::Bool>("/mission_status", 1000);
+    // TODO: Maybe add if not using movit?? speedlPublisher = nh_.advertise<std_msgs::String>("/ur_driver/URScript", 1000);
 }
 
 geometry_msgs::Point control::transform_between_frames(geometry_msgs::Point p, const std::string from_frame, const std::string to_frame) {
@@ -153,9 +157,12 @@ void control::distSensorCallback(const sensor_msgs::Range& range_msg){
 void control::followObject(){
     // TODO: Look into velocity-based approach... this is a bit laggy as it is in steps and not continous.
     // https://ros-planning.github.io/moveit_tutorials/doc/time_parameterization/time_parameterization_tutorial.html#speed-control
-    // Seems like we can use: /joint_speed or /ur_driver/URScript topic to control the speed of the joints:
+    // Seems like we can use /ur_driver/URScript topic to control the speed of the joints:
     // https://github.com/ros-industrial/ur_modern_driver
     // https://github.com/fzi-forschungszentrum-informatik/cartesian_controllers
+
+    // Example: rostopic pub /ur_driver/URScript std_msgs/String "speedl([0,0,-0.1,0,0,0], 0.5, 0.1)"
+
 
 
     std::cout << "Follow object" << std::endl;
@@ -392,5 +399,9 @@ void control::loadParameters(){
 
     if (!nh_.param<double>("acc_scaling_factor", acc_scaling_factor, 0.1)) {
         ROS_WARN_STREAM("Did not found acc_scaling_factor name. Setted to a standard value: " << acc_scaling_factor);
+    } 
+
+    if (!nh_.param<bool>("dist_sensor", dist_sensor, true)) {
+        ROS_WARN_STREAM("Distance sensor is being used: " << dist_sensor);
     } 
 }

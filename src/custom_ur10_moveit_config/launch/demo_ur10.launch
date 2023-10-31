@@ -58,6 +58,7 @@
       <arg name="rviz_config" value="$(find custom_ur10_moveit_config)/launch/moveit.rviz"/> 
   </include>
 
+
   <!-- If database loading was enabled, start mongodb as well 
   <include file="$(find custom_ur10_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
     <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>

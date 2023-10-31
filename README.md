@@ -1,3 +1,6 @@
+## TODO:
+- Rebuild image after added to dockerfile: sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
+
 ## UR10 workspace
 
 The aim of this repository is to perform robotic perception and manipulation of target boxes. The workspace has several main packages: 
@@ -108,7 +111,12 @@ $ roslaunch vl53l0x_driver test.launch
 $ roslaunch meta camera_mission.launch
 ```
 
-## Modifying code:
+## Modifying code -using camera or dist-sensor:
+
+If distance sensor is being used:
+- set control-config dist_senor to True
+- set meta - launch - camera_mission.launch dist_sensor_on to true
+
 **Fixed obstacles / objects**
 
 

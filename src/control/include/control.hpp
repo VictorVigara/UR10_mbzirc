@@ -74,6 +74,7 @@ private:
 
     //  Variables // 
     bool manual = true;
+    bool dist_sensor;
     int static_scan_time;
     double vel_scaling_factor; 
     double acc_scaling_factor;

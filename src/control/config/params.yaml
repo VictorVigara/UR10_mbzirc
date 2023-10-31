@@ -8,3 +8,4 @@ static_scan_time: 2     # Time the robot is stopped in the scan position to let 
 vel_scaling_factor: 0.1 # Factor to reduce the velocity
 acc_scaling_factor: 0.1 # Factor to reduce the acceleration
 real_camera: False      # if False, dummy camera node simulates the camera function pulbishing a target_position
+dist_sensor: False      # True if distance sensor is used

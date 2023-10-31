@@ -15,7 +15,7 @@ RUN apt-get install -y ros-noetic-moveit \
                     ros-noetic-controller-manager \
                     ros-noetic-industrial-msgs \
                     ros-noetic-pcl-ros
-
+                    
 RUN apt-get update
 RUN apt-get install -y xorg-dev \
                     libglu1-mesa-dev \
