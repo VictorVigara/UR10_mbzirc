@@ -1,5 +1,5 @@
 ## TODO:
-- Rebuild image after added to dockerfile: sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
+- Smth wrong with the make (due to camera...)
 
 ## UR10 workspace
 
