@@ -27,6 +27,13 @@ The goal of the mission is to detect target boxes and plan trajectories to grab 
 The control of the manipulator has been done using the MoveIt package, which acts as an interface calculating trajectories given the desired point. Tutorials about this package can be found [here](https://ros-planning.github.io/moveit_tutorials/). In particular, the it has been used the [Move group C++ Interface](https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html). 
 
 
+## Clone the repo locally
+Clone the repository and initialize submodules: 
+```
+$ git clone https://github.com/VictorVigara/UR10_mbzirc
+$ git submodule init
+$ git submodule update 
+```
 
 
  ## Docker
@@ -129,18 +136,6 @@ To be able to use the moveit package, this need to be installed:
 $ sudo apt install ros-noetic-moveit 
 ```
  
-## Installation
-Clone the repository into your catkin working directory and initialize submodules: 
-```
-$ git clone https://github.com/VictorVigara/UR10_mbzirc
-$ git submodule init
-$ git submodule update 
-```
-and make the workspace: 
-```
-$ catkin_make
-```
-
 ## Usage
 
 ### UR10 ethernet configuration
