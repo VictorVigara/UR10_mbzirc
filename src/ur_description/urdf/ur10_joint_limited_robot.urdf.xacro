@@ -34,9 +34,10 @@
   <xacro:include filename="$(find common_sensors)/urdf/sensors/kinect.urdf.xacro" />
   <xacro:sensor_kinect parent="world"/>--> 
 
-  <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
+  <!--xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
   <xacro:sensor_d435 name="camera" parent="ee_link">
     <origin xyz="-0.03 0.0 0.07" rpy="0 0 0"/>
-  </xacro:sensor_d435>
+  </xacro:sensor_d435-->
+
 
 </robot>

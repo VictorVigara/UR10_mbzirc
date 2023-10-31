@@ -1,5 +1,5 @@
 ## TODO:
-- Smth wrong with the make (due to camera...)
+- Smth wrong with the make (due to camera...)... Camera (relsense2) is deleted and outcommented 
 
 ## UR10 workspace
 
