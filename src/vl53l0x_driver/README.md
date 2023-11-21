@@ -75,7 +75,7 @@ docker push docker.io/lucasmogsan/vl53l0x_driver:latest
 
 ## ROS node
 **vl53l0x_node** ROS node publishes sensor_msgs::Range message into **range_data** topic. Node has several optional configuration parameters:
- * port - which usb port to use. Default: /dev/ttyUSB0
+ * port - which usb port to use. Default: /dev/ttyACM1
  * baud_rate - transmission speed between sensor and node. Default: 57600
  * frame_id - tf frame ID of the sensor. Default: ir_range
  * firmware_version - reserved. Not used as for now.

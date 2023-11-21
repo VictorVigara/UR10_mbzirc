@@ -14,7 +14,8 @@ RUN apt-get install -y ros-noetic-moveit \
                     ros-noetic-robot-state-publisher \
                     ros-noetic-controller-manager \
                     ros-noetic-industrial-msgs \
-                    ros-noetic-pcl-ros
+                    ros-noetic-pcl-ros \
+                    ros-noetic-pid
                     
 RUN apt-get update
 RUN apt-get install -y xorg-dev \
@@ -30,8 +31,10 @@ RUN apt-get install -y xorg-dev \
                     zip \
                     unzip \
                     tar \
-                    dh-autoreconf
-
+                    dh-autoreconf \
+                    python3-catkin-tools \
+                    python3-wstool
+                    
 
 
 ## Install realsense stuff
@@ -45,7 +48,6 @@ RUN cd /vcpkg && \
     #cd .. && \
     #rm -rf /vcpkg
     
-
 RUN git clone https://github.com/IntelRealSense/librealsense.git
 RUN cd /librealsense && \
     mkdir build && \

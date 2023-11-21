@@ -6,6 +6,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Float64.h>
 #include <sensor_msgs/Range.h>
 
 #include <sstream>
@@ -55,15 +56,19 @@ control::control(ros::NodeHandle& nodehandle):nh_(nodehandle), move_group_interf
 
 void control::subscribeToTopics(){
     targetPoseSubscriber_ = nh_.subscribe("/target_pose", 1, &control::targetPoseCallback, this);
-    if (dist_sensor == true){
-        distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
-    }
-    
+    control_effort_subscriber = nh_.subscribe("/control_effort", 1, &control::controlEffortCallback, this);
+    distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
+    // if (dist_sensor == true){
+    //     distsensorsubscriber_ = nh_.subscribe("/range_data", 1, &control::distSensorCallback, this);
+    // }
 }
 
 void control::createPublishers(){
     scanFinishedPublisher = nh_.advertise<std_msgs::Bool>("/mission_status", 1000);
-    // TODO: Maybe add if not using movit?? speedlPublisher = nh_.advertise<std_msgs::String>("/ur_driver/URScript", 1000);
+    speedlPublisher = nh_.advertise<std_msgs::String>("/ur_driver/URScript", 1000); // TODO: Use this instead of moveit to control the speed of the joints
+    setpoint_pid = nh_.advertise<std_msgs::Float64>("/setpoint", 1000);
+    state_pid = nh_.advertise<std_msgs::Float64>("/state", 1000);
+    pid_enable = nh_.advertise<std_msgs::Bool>("/pid_enable", 1000);
 }
 
 geometry_msgs::Point control::transform_between_frames(geometry_msgs::Point p, const std::string from_frame, const std::string to_frame) {
@@ -129,27 +134,38 @@ double sum(std::list<double>& list) {
 }
 
 void control::distSensorCallback(const sensor_msgs::Range& range_msg){
+    // Read distance sensor
     if (range_msg.range > 1.5 or range_msg.range == 0.0){
+        // If the object is not in range, set the distance to a fixed value (max read distance)
         sensor_z_mean = 1.3;
         std::cout << "Object not in range - dist read set to: " << sensor_z_mean << std::endl;
         
     }
     else {
+        // If the object is in range, read the distance and store it in a list to calculate the mean
         sensor_z = range_msg.range;
-        //std::cout << "Distance to object [m] --- : " << sensor_z << std::endl;
 
-        if (z_distance_list.size() < 5){
+        if (z_distance_list.size() < 3){
             z_distance_list.push_back(sensor_z);
         }
         else{
             z_distance_list.pop_front();
             z_distance_list.push_back(sensor_z);
         }
+        // Calculate the mean distance of the last 3 measurements
         sensor_z_mean = sum(z_distance_list)/z_distance_list.size();
         std::cout << "Distance to object [m]: " << sensor_z_mean << std::endl;
 
+        // Calculate the velocity of the object
+        // TODO: use time instead of number of measurements
         sensor_z_velocity = (z_distance_list.back() - z_distance_list.front())/z_distance_list.size();
     }
+}
+
+
+void control::controlEffortCallback(const std_msgs::Float64& control_effort_msg){
+    output_pid = control_effort_msg.data;
+    //std::cout << "Control effort: " << output_pid << std::endl;
 }
 
 
@@ -168,42 +184,85 @@ void control::followObject(){
     std::cout << "Follow object" << std::endl;
 
     // Initialize flag to check if the target is close enough to grab it
-    bool ready_to_grab = false;
+    bool move_to_grab = false;
+    bool grab_object = false;
+    int counter_follow_object = 0;
+    
+    // Distance to follow the object and distance to grab it
+    float follow_dist = 0.3;
+    float grab_dist = 0.05;
 
+    // Initialize position above target
+    // TODO: Read x,y from camera node
     std::cout << "Planning pos 1" << std::endl;
     orientation.setRPY(-(2* M_PI)/4, 0, 0);
     target_pose.orientation = tf2::toMsg(orientation);
     target_pose.position.x = -0.07; 
     target_pose.position.y = 0.55;
-    target_pose.position.z =  0.4;
-
+    target_pose.position.z =  0.8;
     move_group_interface_arm.setPoseTarget(target_pose);
     planAndMove();
+    ros::Duration(5).sleep();
 
 
-    while (ready_to_grab != true){
-        // Read target position from distance sensor:
-        double z_distance = sensor_z_mean;
-        double z_obj_rel_vel = sensor_z_velocity;
 
-        // Set robot target pose:
-        // Downwards orientation per default
-        orientation.setRPY(-(2* M_PI)/4, 0, 0);
-        target_pose.orientation = tf2::toMsg(orientation);
-        // Fill target_pose with the position received from the camera node transformed to robot coordinates
-        target_pose.position.x = -0.07;
-        target_pose.position.y = 0.55;
-        // Make a poistion control to follow the object:
-        target_pose.position.z = 0.3 + z_distance;
-        // Update target pose
-        move_group_interface_arm.setPoseTarget(target_pose);
-        // Plan and move 
-        planAndMove();
+    // Enable PID controller:
+    std_msgs::Bool enable_msg;
+    enable_msg.data = true;
+    pid_enable.publish(enable_msg);
 
-        // Check if the target is close enough to grab it
-        if (z_distance < 0.1){
-            ready_to_grab = true;
+    // Setpoint for PID controller:
+    std_msgs::Float64 setpoint_msg;
+    setpoint_msg.data = follow_dist;
+
+    while (grab_object != true){
+        // Send setpoint to PID controller:
+        setpoint_pid.publish(setpoint_msg);
+
+        // Send state to PID controller:
+        std_msgs::Float64 state_msg;
+        state_msg.data = sensor_z_mean;
+        state_pid.publish(state_msg);    
+
+        // Robot velocity to follow the object:
+        double z_robot_vel = output_pid;
+        // Publish speedl command to the robot:
+        std_msgs::String speedl_msg;
+        speedl_msg.data = "speedl([0,0," + std::to_string(z_robot_vel) + ",0,0,0], 0.5, 0.1)";
+        speedlPublisher.publish(speedl_msg);
+        std::cout << z_robot_vel << std::endl;
+
+        // Follow the object for 5 seconds continously (stay within +/- 0.1m of the setpoint follow target):
+        if (sensor_z_mean > follow_dist - 0.05 && sensor_z_mean < follow_dist + 0.05){
+            counter_follow_object = counter_follow_object + 1;
+            if (counter_follow_object > 50){
+                move_to_grab = true;
+                setpoint_msg.data = grab_dist;
+                std::cout << "Move to grab object" << std::endl;
+
+            }
         }
+        else{
+            counter_follow_object = 0;
+        }
+
+        // Check if the target is close enough to grab it:
+        if (sensor_z_mean < grab_dist && move_to_grab == true){
+            // Update grab_object flag to exit the following loop
+            grab_object = true;
+            // Stop the robot:
+            speedl_msg.data = "speedl([0,0,0,0,0,0], 0.5, 0.1)";
+            speedlPublisher.publish(speedl_msg);
+            // Disable PID controller:
+            std_msgs::Bool enable_msg;
+            enable_msg.data = false;
+            pid_enable.publish(enable_msg);
+            ros::Duration(0.1).sleep();
+        }
+
+        // Update command at 10 Hz
+        // TODO: Test if this sleep causes delays in the PID controller
+        ros::Duration(0.05).sleep();
     }
 }
 
@@ -269,17 +328,18 @@ void control::grabObject(){
 
     std::cout << "Target grabbed" << std::endl;
 
-
     std::cout << "Moving out ..." << std::endl;
+    // TODO: This causes some problems sometimes?? IS read not always correct?
     current_pose = move_group_interface_arm.getCurrentPose("ee_link");  
     std::cout << current_pose << std::endl; 
     target_pose.position = current_pose.pose.position; 
-    target_pose.position.z = current_pose.pose.position.z + 0.5;
+    target_pose.position.z = current_pose.pose.position.z + 0.3;
     std::cout << target_pose << std::endl;
     move_group_interface_arm.setPoseTarget(target_pose);
 
     // Plan the trajectory and move to it
     planAndMove();
+    ros::Duration(1).sleep();
 
 }
 
@@ -292,7 +352,7 @@ void control::goFinalPosition(){
     target_pose.orientation = tf2::toMsg(orientation);
     target_pose.position.x = -0.4;
     target_pose.position.y = 0.5;
-    target_pose.position.z = 0.2;
+    target_pose.position.z = 0.5;
     move_group_interface_arm.setPoseTarget(target_pose);
 
     // Plan the trajectory and move to it
@@ -325,8 +385,14 @@ void control::testSequence(){
         orientation.setRPY(-(2* M_PI)/4, 0, 0);
         target_pose.orientation = tf2::toMsg(orientation);
         target_pose.position.x = -0.07; 
-        target_pose.position.y = 0.59;
-        target_pose.position.z =  0.170;
+        target_pose.position.y = 0.55;
+        target_pose.position.z =  0.6;
+
+        // orientation.setRPY(-(2* M_PI)/4, 0, 0);
+        // target_pose.orientation = tf2::toMsg(orientation);
+        // target_pose.position.x = -0.07; 
+        // target_pose.position.y = 0.59;
+        // target_pose.position.z =  0.170;
 
         move_group_interface_arm.setPoseTarget(target_pose);
         planAndMove();
@@ -337,31 +403,59 @@ void control::testSequence(){
 
 void control::runAll(){
 
-    //followObject();
+    bool object_grabbed = false;
 
-    testSequence();
+    while (object_grabbed != true){
+        // Initial scan to detect target object
+        initialScan();
 
-    // Initial scan to detect target object
-    initialScan(); 
+        // Move above object (gets coordinates from camera)
+        // Moves towards the object until within a certain distance
+        followObject();
 
-    // Wait until the target position has been published by the camera node
-    while (ros::ok && grab_object == false){
-        if (target_received == true && grab_object == false){
-            // Move to target position received from camera
-            approachTarget(); 
+        // Grab object and to initial position
+        grabObject();
 
-            // Update grab_object flag to start the grabbing 
-            grab_object = true;
+        // Check if the object is grabbed (by checking the distance sensor)
+        if (sensor_z_mean < 0.2){
+            // If the object is grabbed, set object_grabbed flag to true to exit the loop
+            object_grabbed = true;
+            
         }
-        // Update callback values
-        ros::spinOnce();
+        else{
+            // If the object is not grabbed, detach the box (in moveit) and try again
+            // detachBox();
+            move_group_interface_arm.detachObject(target_box_object.id);
+        }
     }
 
-    // Grab object (Gripper control has to be implemented)
-    grabObject(); 
+    // Move to final position with the box
+    goFinalPosition();
 
-    // Plan and move to the final position with the box
-    goFinalPosition(); 
+
+    // testSequence();
+
+    // // Initial scan to detect target object
+    // initialScan(); 
+
+    // // Wait until the target position has been published by the camera node
+    // while (ros::ok && grab_object == false){
+    //     if (target_received == true && grab_object == false){
+    //         // Move to target position received from camera
+    //         approachTarget(); 
+
+    //         // Update grab_object flag to start the grabbing 
+    //         grab_object = true;
+    //     }
+    //     // Update callback values
+    //     ros::spinOnce();
+    // }
+
+    // // Grab object (Gripper control has to be implemented)
+    // grabObject(); 
+
+    // // Plan and move to the final position with the box
+    // goFinalPosition(); 
 }
 
 

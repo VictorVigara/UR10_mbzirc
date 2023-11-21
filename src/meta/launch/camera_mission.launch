@@ -1,7 +1,7 @@
 <launch>
 
     <arg name="real_camera" default="false" />
-    <arg name="dist_sensor_on" default="false" />
+    <arg name="dist_sensor_on" default="true" />
 
     <!-- Load the YAML file containing the parameter -->
     <rosparam command="load" file="$(find control)/config/params.yaml" />

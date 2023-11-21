@@ -19,6 +19,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include "geometry_msgs/Point.h"
 #include <sensor_msgs/Range.h>
+#include <std_msgs/Float64.h>
 
 #include <chrono>
 
@@ -52,17 +53,20 @@ private:
     // Subscribers
     ros::Subscriber targetPoseSubscriber_;
     ros::Subscriber distsensorsubscriber_;
+    ros::Subscriber control_effort_subscriber;
     
-
     //Publishers
     ros::Publisher scanFinishedPublisher;
+    ros::Publisher speedlPublisher;
+    ros::Publisher setpoint_pid;
+    ros::Publisher state_pid;
+    ros::Publisher pid_enable;
     
-
     // Callbacks
     void targetPoseCallback(const geometry_msgs::Pose::ConstPtr &msg);
     void distSensorCallback(const sensor_msgs::Range& range_msg);
+    void controlEffortCallback(const std_msgs::Float64& control_effort_msg);
     
-
     // transforms
     tf2_ros::Buffer tf_buffer;
     tf2_ros::TransformListener tfListener;
@@ -110,6 +114,10 @@ private:
     double sensor_z_mean;
     double sensor_z_velocity;
     std::list<double> z_distance_list;
+
+    // PID:
+    float output_pid;
+
 
 
     tf2::Quaternion orientation;

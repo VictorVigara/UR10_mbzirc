@@ -4,4 +4,18 @@
             <!--Load parameters from config files-->
             <rosparam command="load" file="$(find control)/config/params.yaml" />
     </node>
+
+    <!-- Launch PID controller for z movement -->
+    <node name="z_move_pid" pkg="pid" type="controller" >
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.1" />
+      <param name="Kd" value="0" />
+      <param name="upper_limit" value="1" />
+      <param name="lower_limit" value="-1" />
+      <param name="windup_limit" value="1" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="50.0" />
+    </node>
+
+
 </launch>

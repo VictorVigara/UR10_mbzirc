@@ -24,6 +24,7 @@
   -->
   <arg name="use_gui" default="false" />
   <arg name="use_rviz" default="true" />
+  <!--Tried for moveit servo but not working <arg name="moveit_controller_manager" default="fake" />-->
 
   <!-- If needed, broadcast static tf for robot root -->
 
@@ -46,6 +47,7 @@
   <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find custom_ur10_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
+    <!--Tried for moveit servo but not working <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)" />-->
     <!--<arg name="fake_execution" value="false"/>-->
     <arg name="info" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
@@ -57,6 +59,7 @@
   <include file="$(find custom_ur10_moveit_config)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
       <arg name="rviz_config" value="$(find custom_ur10_moveit_config)/launch/moveit.rviz"/> 
   </include>
+
 
 
   <!-- If database loading was enabled, start mongodb as well 

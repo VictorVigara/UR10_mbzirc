@@ -1,5 +1,5 @@
 ## TODO:
-- Smth wrong with the make (due to camera...)... Camera (relsense2) is deleted and outcommented 
+- Smth wrong with the make (due to camera...)... Camera (relsense2) is deleted and outcommented... Maybe not? Worked for robotics_group
 
 ## UR10 workspace
 
@@ -71,16 +71,24 @@ docker start ur10_mbzirc_develop
 
 ## Building the image (if needed)
 Build image
+... where $DOCKERHUB_USER is your dockerhub username
 1. cd to the folder where the dockerfile is located (in this repos root folder)
 ```bash
-docker build . -t lucasmogsan/ur10_mbzirc_develop:latest
+docker build . -t $DOCKERHUB_USER/ur10_mbzirc_develop:latest
 ```
 2. The following is optional if you want to push to dockerhub:
 ```bash
-docker tag lucasmogsan/ur10_mbzirc_develop:latest docker.io/lucasmogsan/ur10_mbzirc_develop:latest
+docker tag $DOCKERHUB_USER/ur10_mbzirc_develop:latest docker.io/$DOCKERHUB_USER/ur10_mbzirc_develop:latest
 ```
 
 ```bash
+docker push docker.io/$DOCKERHUB_USER/ur10_mbzirc_develop:latest
+```
+
+Example, Lucas:
+```bash
+docker build . -t lucasmogsan/ur10_mbzirc_develop:latest
+docker tag lucasmogsan/ur10_mbzirc_develop:latest docker.io/lucasmogsan/ur10_mbzirc_develop:latest
 docker push docker.io/lucasmogsan/ur10_mbzirc_develop:latest
 ```
 
@@ -114,6 +122,8 @@ $ roslaunch vl53l0x_driver test.launch
 
 
 **Run main program:** to find and pick the box object:
+OBS: Make sure ros-noetic-pid is installed (sudo apt-get install ros-noetic-pid)
+OBS: Robot speed on the main controller (physical controller tablet) set to 100%
 ```
 $ roslaunch meta camera_mission.launch
 ```
