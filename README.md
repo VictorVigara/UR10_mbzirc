@@ -36,7 +36,7 @@ $ git submodule update
 ```
 
 
- ## Docker
+## Docker
 Make sure that Docker is installed following the official [Docker Installation Instructions](https://docs.docker.com/engine/install/). It is advisable to also follow the [Linux Post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/).
 
 0. Before starting up - on your local computer - go to your "wired connetion" and edit settings for your connection:
@@ -97,7 +97,7 @@ docker push docker.io/lucasmogsan/ur10_mbzirc_develop:latest
 ## Runningt the code
 First source and build the ros environment and packages.
 ```
-$ (maybe needed) source /opt/ros/noetic/setup.bash
+$ source /opt/ros/noetic/setup.bash
 $ cd /UR10_mbzirc_ws
 $ catkin_make
 $ source devel/setup.bash
@@ -137,7 +137,7 @@ If distance sensor is being used:
 **Fixed obstacles / objects**
 
 
-
+# Old description (Victor)
 
 ## Requirements
 This workspace works in Ubuntu 20.04 with ROS Noetic and the UR10 CB2 version. 

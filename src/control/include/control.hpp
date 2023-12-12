@@ -21,6 +21,7 @@
 #include <sensor_msgs/Range.h>
 #include <std_msgs/Float64.h>
 
+
 #include <chrono>
 
 
@@ -41,6 +42,7 @@ public:
     void attachBox();
     void testSequence();
     void followObject();
+    
 
     std::string target_pose_topic;
     std::string scan_finished_topic; 
@@ -112,17 +114,28 @@ private:
 
     double sensor_z;
     double sensor_z_mean;
-    double sensor_z_velocity;
     std::list<double> z_distance_list;
 
     // PID:
     float output_pid;
 
-
-
     tf2::Quaternion orientation;
 
     const double tau = 2 * M_PI;
+
+    // Saving data
+    void saveDataToCSV(const std::string& filename);
+    struct PoseAndVelocity {
+        double x;
+        double y;
+        double z;
+        double z_robot_vel;
+        double setpoint;
+        double state;
+        ros::Time time;
+    };
+    // Create a vector to store poses and velocities
+    std::vector<PoseAndVelocity> pose_and_velocity_history;
 };
 
 #endif // __CONTROL_H__

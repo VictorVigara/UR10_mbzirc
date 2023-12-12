@@ -34,7 +34,7 @@ void setup() {
 }
 
 void loop() {
-    if ((millis() - range_timer) > 50) {
+    if ((millis() - range_timer) > 10) {        // Before: 50
         // message start
         Serial.write(0xAD);
         sensor.rangingTest(&measure, false);
@@ -48,8 +48,13 @@ void loop() {
             Serial.write(measure.RangeMilliMeter >> 8);
         }
         // message end
-        Serial.write(0x0D);
-        Serial.write(0x0A);
-        range_timer = millis();
+        //Serial.write(0x0D);
+        //Serial.write(0x0A);
+        //range_timer = millis();
+
+        // Do serial print of the measurement data
+        //Serial.print("Range: ");
+        //Serial.print(measure.RangeMilliMeter);
+        //Serial.print(" mm");
     }
 }

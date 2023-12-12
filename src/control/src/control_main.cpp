@@ -30,7 +30,6 @@ int main(int argc, char **argv){
     std::cout << "Class created" << std::endl;
 
     control.runAll();
-    //control.approachTarget();
 
 
     std::cout << "Mission finished" << std::endl;

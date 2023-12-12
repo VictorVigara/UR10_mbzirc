@@ -15,7 +15,8 @@ RUN apt-get install -y ros-noetic-moveit \
                     ros-noetic-controller-manager \
                     ros-noetic-industrial-msgs \
                     ros-noetic-pcl-ros \
-                    ros-noetic-pid
+                    ros-noetic-pid \
+                    ros-noetic-gazebo-ros
                     
 RUN apt-get update
 RUN apt-get install -y xorg-dev \
@@ -59,7 +60,7 @@ RUN cd /librealsense && \
     cd .. && \
     rm -rf /librealsense
 
-
+RUN source /opt/ros/noetic/setup.bash
 
 
 

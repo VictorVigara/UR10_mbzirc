@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<robot name="ur10" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find ur_description)/urdf/ur10_joint_limited_robot.urdf.xacro" />
+  
+  <!-- Robotiq Coupler -->
+  <!--  + Height added by the coupler: 8mm -->
+  <!--  + Reference frame: at the middle (4mm) -->
+  <link name="gripper">
+    <visual>
+      <geometry>
+        <mesh filename="package://ur_description/meshes/gripper/gripper.stl" />
+      </geometry>
+      <material name="flat_black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://ur_description/meshes/gripper/gripper.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0  0  0" rpy="0 0 0" />
+      <mass value="1.0" />
+      <inertia ixx="0" ixy="0" ixz="0" 
+               iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="gripper_joint" type="fixed">
+    <origin xyz="0 0 0.004" rpy="0 0 ${-pi/2.0}" />
+    <parent link="tool0"/>
+    <child link="gripper"/>
+  </joint>
+
+  <gazebo reference="gripper">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  
+</robot>
