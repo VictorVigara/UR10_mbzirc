@@ -23,6 +23,8 @@ The goal of the mission is to detect target boxes and plan trajectories to grab 
 
 The control of the manipulator has been done using the MoveIt package, which acts as an interface calculating trajectories given the desired point. Tutorials about this package can be found [here](https://ros-planning.github.io/moveit_tutorials/). In particular, the it has been used the [Move group C++ Interface](https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html). 
 
+![Demo](/images/Robotic_arm_camera_demo.gif)
+
 
 ## Requirements
 This workspace works in Ubuntu 20.04 with ROS Noetic and the UR10 CB2 version. 
